@@ -1,10 +1,11 @@
-from django.shortcuts import render
+# from django.shortcuts import render
 from rest_framework import generics, viewsets
 
 from college.models import Course, Lesson
 from college.serliazers import CourseSerializer, LessonSerializer
 
 # Create your views here.
+
 
 class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
