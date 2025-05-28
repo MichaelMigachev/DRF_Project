@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from college.models import Course, Lesson
+
 # Create your models here.
 
 
@@ -40,3 +42,24 @@ class User(AbstractUser):
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
+
+
+class Payment(models.Model):
+    PAYMENT_METHODS = [
+        ("cash", "Наличными"),
+        ("transfer", "Перевод на счет"),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    payment_date = models.DateTimeField(auto_now_add=True)
+    paid_course = models.ForeignKey(
+        Course, null=True, blank=True, on_delete=models.CASCADE
+    )
+    paid_lesson = models.ForeignKey(
+        Lesson, null=True, blank=True, on_delete=models.CASCADE
+    )
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_method = models.CharField(max_length=10, choices=PAYMENT_METHODS)
+
+    def __str__(self):
+        return f"Payment of {self.amount} by {self.user.email} on {self.payment_date}"
