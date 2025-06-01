@@ -1,6 +1,7 @@
 from django.db import models
+from django.conf import settings
 
-# Create your models here.
+# from users.models import User
 
 
 class Course(models.Model):
@@ -14,6 +15,14 @@ class Course(models.Model):
     )
     description = models.TextField(
         max_length=250, verbose_name="описание", help_text="Введите описание"
+    )
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name="Владелец",
+        help_text="Укажите владельца",
     )
 
     def __str__(self):
@@ -38,6 +47,15 @@ class Lesson(models.Model):
     )
     video_url = models.URLField(null=True, blank=True, verbose_name="Ссылка на видео")
     course = models.ForeignKey(Course, related_name="lessons", on_delete=models.CASCADE)
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        verbose_name="Владелец",
+        help_text="Укажите владельца",
+    )
 
     def __str__(self):
         return f"{self.title}"
