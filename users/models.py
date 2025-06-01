@@ -7,9 +7,7 @@ from college.models import Course, Lesson
 
 
 class User(AbstractUser):
-    username = models.CharField(
-        max_length=50, null=True, blank=True, verbose_name="Имя пользователя"
-    )
+    username = None
     email = models.EmailField(unique=True, verbose_name="Электронная почта")
     avatar = models.ImageField(
         upload_to="users/avatars",

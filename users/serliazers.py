@@ -7,15 +7,15 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        # fields = '__all__'
-        fields = (
-            "id",
-            "email",
-            "username",
-            "phone_number",
-            "avatar",
-            "city",
-        )
+        fields = "__all__"
+        # fields = (
+        #     "id",
+        #     "email",
+        #     "username",
+        #     "phone_number",
+        #     "avatar",
+        #     "city",
+        # )
 
 
 class PaymentSerializer(serializers.ModelSerializer):
