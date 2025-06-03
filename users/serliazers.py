@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+
 from users.models import User, Payment
 
 
@@ -16,6 +17,14 @@ class UserSerializer(serializers.ModelSerializer):
         #     "avatar",
         #     "city",
         # )
+
+from rest_framework import serializers
+from users.models import User
+
+class UserProfilePublicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email', "avatar",)  # Общая информация, доступная всем
 
 
 class PaymentSerializer(serializers.ModelSerializer):
