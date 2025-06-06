@@ -1,7 +1,7 @@
 from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
-
-from users.models import User, Payment
+from users.models import User, Payment, Follow
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -18,8 +18,6 @@ class UserSerializer(serializers.ModelSerializer):
         #     "city",
         # )
 
-from rest_framework import serializers
-from users.models import User
 
 class UserProfilePublicSerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,4 +28,17 @@ class UserProfilePublicSerializer(serializers.ModelSerializer):
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
+        fields = "__all__"
+
+
+class FollowSerializer(ModelSerializer):
+    follow_check = SerializerMethodField()
+
+    def get_follow_check(self, instance):
+        if instance.follow_courses.all().first():
+            return instance.follow_courses.all().first().course
+        return 0
+
+    class Meta:
+        model = Follow
         fields = "__all__"

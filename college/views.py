@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from college.models import Course, Lesson
 from college.serliazers import CourseSerializer, LessonSerializer
+from college.paginators import CustomPagination
 
 from users.permissions import IsModerator, IsOwner
 
@@ -13,6 +14,7 @@ from users.permissions import IsModerator, IsOwner
 class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
+    pagination_class = CustomPagination
 
     def perform_create(self, serializer):
         new_course = serializer.save()
@@ -38,22 +40,24 @@ class LessonCreteAPIView(generics.CreateAPIView):
     permission_classes = (IsAuthenticated & ~IsModerator,)
 
     def perform_create(self, serializer):
-        new_lesson = serializer.save()
-        new_lesson.owner = self.request.user
-        new_lesson.save()
+        serializer.save(owner=self.request.user)
+        # new_lesson = serializer.save()
+        # new_lesson.owner = self.request.user
+        # new_lesson.save()
 
 
 class LessonListAPIView(generics.ListAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
     permission_classes = (IsAuthenticated & IsModerator | IsOwner,)
+    pagination_class = CustomPagination
 
     def get_queryset(self):
         """Возвращает объекты в зависимости от прав доступа."""
         if self.request.user.groups.filter(name="moderators"):
-            return Course.objects.all()
+            return Lesson.objects.all()
         else:
-            return Course.objects.filter(owner=self.request.user.pk)
+            return Lesson.objects.filter(owner=self.request.user.pk)
 
 
 class LessonUpdateAPIView(generics.UpdateAPIView):

@@ -24,6 +24,7 @@ class Course(models.Model):
         verbose_name="Владелец",
         help_text="Укажите владельца",
     )
+    video_url = models.URLField(null=True, blank=True, verbose_name="Ссылка на видео")
 
     def __str__(self):
         return f"{self.title}"
