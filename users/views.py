@@ -96,7 +96,7 @@ class UserListAPIView(ListAPIView):
 class FollowUpdateAPIView(UpdateAPIView):
     queryset = Follow.objects.all()
     serializer_class = FollowSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def post(self, *args, **kwargs):
         user = self.request.user
