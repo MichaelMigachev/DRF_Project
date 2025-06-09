@@ -9,7 +9,8 @@ from users.views import (
     UserDestroyAPIView,
     UserListAPIView,
     PaymentList,
-    FollowUpdateAPIView
+    FollowUpdateAPIView,
+    DonationCreateAPIView,
 )
 
 # Описание маршрутизации для User
@@ -30,4 +31,7 @@ urlpatterns = [
 
     # для подписок на курсы
     path("follow/<int:pk>/", FollowUpdateAPIView.as_view(), name="follow_check"),
+
+    # для платежей
+    path("donation/", DonationCreateAPIView.as_view(), name="donation"),
 ]

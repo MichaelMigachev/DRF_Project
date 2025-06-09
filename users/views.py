@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, filters, status
 from rest_framework.generics import (
@@ -11,12 +12,9 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from college.models import Course, Lesson
-from users.models import User, Payment, Follow
-from users.serliazers import UserSerializer, PaymentSerializer, UserProfilePublicSerializer, FollowSerializer
-
-
-# Create your views here.
-
+from users.models import User, Payment, Follow, Donation
+from users.serliazers import UserSerializer, PaymentSerializer, UserProfilePublicSerializer, FollowSerializer, DonationSerializer
+from users.services import convert_rub_to_usd, create_stripe_product, create_stripe_price, create_stripe_session
 
 # class UserViewSet(viewsets.ModelViewSet):
 #     serializer_class = UserSerializer
@@ -71,6 +69,7 @@ class UserListAPIView(ListAPIView):
     показывая свой профиль с полными данными и чужие профили с ограниченной информацией.
     """
     permission_classes = [IsAuthenticated]
+    serializer_class = UserSerializer
 
     def get_queryset(self):
         return User.objects.all()  # Получает всех пользователей
@@ -119,3 +118,22 @@ class FollowUpdateAPIView(UpdateAPIView):
 
         # Возвращаем ответ в API
         return Response({"message": message}, status=status_code)
+
+
+class DonationCreateAPIView(CreateAPIView):
+    serializer_class = DonationSerializer
+    queryset = Donation.objects.all()
+    # permission_classes = (AllowAny,)
+
+    def perform_create(self, serializer):
+        course = Course.objects.get(pk=int(self.request.data.get('course')))
+        payment = serializer.save(user=self.request.user)
+        amount_in_dollars = convert_rub_to_usd(payment.amount)
+        product = create_stripe_product(course)
+        price = create_stripe_price(amount_in_dollars, product)
+        session_id, payment_link = create_stripe_session(price)
+        payment.session_id = session_id
+        payment.link = payment_link
+        payment.save()
+
+
