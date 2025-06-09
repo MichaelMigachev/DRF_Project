@@ -87,3 +87,19 @@ class Follow(models.Model):
 
     def __str__(self):
         return f"{self.user} подписан на {self.courses}"
+
+
+class Donation(models.Model):
+    amount = models.PositiveIntegerField(
+        verbose_name="Сумма пожертвования", help_text="Укажите сумму пожертвования"
+    )
+    session_id = models.CharField(max_length=255, verbose_name="Id сессии", blank=True, null=True, help_text="Укажите id сессии")
+    link = models.URLField(max_length=400, verbose_name="Ccылка на оплату", blank=True, null=True, help_text="Укажите ссылку на оплату")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь", blank=True, null=True,help_text="Укажите пользователя")
+
+    class Meta:
+        verbose_name = "Пожертвование"
+        verbose_name_plural = "Пожертвования"
+
+    def __str__(self):
+        return self.amount
