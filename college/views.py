@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from college.models import Course, Lesson
 from college.serliazers import CourseSerializer, LessonSerializer
 from college.paginators import CustomPagination
+from college.tasks import send_email_to_subs_after_updating_course
 
 from users.permissions import IsModerator, IsOwner
 
@@ -32,6 +33,11 @@ class CourseViewSet(viewsets.ModelViewSet):
         elif self.action == "destroy":
             self.permission_classes = (IsAuthenticated & IsOwner,)
         return super().get_permissions()
+
+    def perform_update(self, serializer):
+        """Переопределение метода для отправки сообщения об обновлении курса"""
+        instance = serializer.save()
+        send_email_to_subs_after_updating_course.delay(instance.pk)
 
 
 class LessonCreteAPIView(generics.CreateAPIView):
